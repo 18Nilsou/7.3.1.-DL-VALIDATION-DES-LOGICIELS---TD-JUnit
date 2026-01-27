@@ -28,3 +28,6 @@ surefire-reports/
 
 # Others
 *.swp
+
+target/
+**/target/

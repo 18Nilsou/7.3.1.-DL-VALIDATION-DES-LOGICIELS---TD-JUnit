@@ -1,12 +1,15 @@
 package fr.imt;
 import java.util.Date;
-import java.util.List.Map;
+
+import java.util.HashMap;
+import java.util.List;
 
 public interface Library {
-    boolean logIn(int id, String username, String password);
+    boolean logIn(String username, String password);
     void getBooking(Book book, Subscriber subscriber, Date beginDate);
     void returnBook(Book book, Subscriber subscriber);
     void borrowBook(Book book, Subscriber subscriber);
-    Book searchBook(String title);
+    List<Book> searchBook(HashMap<String,String> mapSearch);
     boolean addSubscriber(Subscriber subscriber);
+    void addBook(Book book);
 }
