@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="fr.imt.AppTest" time="0.011" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="fr.imt.AppTest" time="0.012" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="25"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -12,7 +12,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="FR"/>
     <property name="sun.boot.library.path" value="/opt/homebrew/Cellar/openjdk/25.0.1/libexec/openjdk.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/nils/Desktop/IMT/S7/validationLogiciel/test-TD/7.3.1.-DL-VALIDATION-DES-LOGICIELS---TD-JUnit/bibliotheque/target/surefire/surefirebooter160354255823116242.jar /Users/nils/Desktop/IMT/S7/validationLogiciel/test-TD/7.3.1.-DL-VALIDATION-DES-LOGICIELS---TD-JUnit/bibliotheque/target/surefire 2026-01-27T14-37-18_030-jvmRun1 surefire16042148870751740814tmp surefire_015838586070519829392tmp"/>
+    <property name="sun.java.command" value="/Users/nils/Desktop/IMT/S7/validationLogiciel/test-TD/7.3.1.-DL-VALIDATION-DES-LOGICIELS---TD-JUnit/bibliotheque/target/surefire/surefirebooter8320492966155608321.jar /Users/nils/Desktop/IMT/S7/validationLogiciel/test-TD/7.3.1.-DL-VALIDATION-DES-LOGICIELS---TD-JUnit/bibliotheque/target/surefire 2026-01-27T14-45-10_574-jvmRun1 surefire15419922093967473924tmp surefire_012349508390495671219tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/nils/Desktop/IMT/S7/validationLogiciel/test-TD/7.3.1.-DL-VALIDATION-DES-LOGICIELS---TD-JUnit/bibliotheque/target/test-classes:/Users/nils/Desktop/IMT/S7/validationLogiciel/test-TD/7.3.1.-DL-VALIDATION-DES-LOGICIELS---TD-JUnit/bibliotheque/target/classes:/Users/nils/.m2/repository/junit/junit/4.11/junit-4.11.jar:/Users/nils/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -28,7 +28,7 @@
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/nils/Desktop/IMT/S7/validationLogiciel/test-TD/7.3.1.-DL-VALIDATION-DES-LOGICIELS---TD-JUnit/bibliotheque/target/surefire/surefirebooter160354255823116242.jar"/>
+    <property name="surefire.real.class.path" value="/Users/nils/Desktop/IMT/S7/validationLogiciel/test-TD/7.3.1.-DL-VALIDATION-DES-LOGICIELS---TD-JUnit/bibliotheque/target/surefire/surefirebooter8320492966155608321.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="25.0.1"/>
     <property name="user.name" value="nils"/>
