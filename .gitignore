@@ -1,0 +1,30 @@
+# Java
+/target/
+*.class
+
+# Maven
+/logs/
+*.log
+!.mvn/wrapper/maven-wrapper.jar
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ IDEA
+*.iml
+.idea/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test output
+surefire-reports/
+
+# Others
+*.swp
