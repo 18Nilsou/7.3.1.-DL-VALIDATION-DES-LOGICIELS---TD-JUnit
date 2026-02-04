@@ -65,18 +65,27 @@ public class Library implements ILibrary {
     }
 
     @Override
-    public void returnBook(IBook book, ISubscriber subscriber) {
+    public BookingState returnBook(IBook book, ISubscriber subscriber) {
         IBooking booking = findBooking(book, subscriber);
+
         if (booking.getStatus() != BookingState.BORROW && booking.getStatus() != BookingState.LATE) {
             throw new IllegalArgumentException("Book is not in BORROW or LATE state");
         }
-        booking.setStatus(BookingState.RETURN);
+
+        if (getLateBookings(subscriber).contains(book)) {
+            booking.setStatus(BookingState.RETURN_LATE);
+        } else {
+            booking.setStatus(BookingState.RETURN);
+        }
+
         for (IBook b : catalogue) {
             if (b.equals(book)) {
                 ((Book) b).incrementStock();
                 break;
             }
         }
+
+        return booking.getStatus();
     }
 
     @Override
@@ -88,7 +97,7 @@ public class Library implements ILibrary {
         if (booking.getBeginDate().after(new Date())) {
             throw new IllegalArgumentException("Booking start date is in the future");
         }
-        
+
         for (IBook b : catalogue) {
             if (b.equals(book)) {
                 if (((Book) b).getStock() <= 0) {

@@ -7,7 +7,7 @@ import java.util.List;
 public interface ILibrary {
     boolean logIn(String username, String password);
 
-    void returnBook(IBook book, ISubscriber subscriber);
+    BookingState returnBook(IBook book, ISubscriber subscriber);
     void borrowBook(IBook book, ISubscriber subscriber);
     List<IBook> searchBooks(HashMap<String,String> mapSearch);
     boolean addSubscriber(ISubscriber subscriber);

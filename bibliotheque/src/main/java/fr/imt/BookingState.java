@@ -4,5 +4,6 @@ public enum BookingState {
     BOOKED,
     BORROW,
     RETURN,
-    LATE
+    LATE,
+    RETURN_LATE
 }

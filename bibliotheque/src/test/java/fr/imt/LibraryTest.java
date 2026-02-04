@@ -162,30 +162,33 @@ public class LibraryTest {
             });
     }
 
-/* 
+
     @Test
     @DisplayName("S10: Un abonné retourne un livre dans les temps")
     public void testS10_ReturnBookOnTime() {
-        doNothing().when(library).returnBook(book1, johnny);
-        
-        library.returnBook(book1, johnny);
-        
-        verify(library).returnBook(book1, johnny);
+        boolean result = library.addBooking(book1, johnny, new Date(System.currentTimeMillis() - 15L * 24 * 60 * 60 * 1000));
+        assertTrue(result);
+
+        library.borrowBook(book1, johnny);
+
+
+        BookingState state = library.returnBook(book1, johnny);
+        assertEquals(BookingState.RETURN, state);
     }
-*/
-/* 
+
+
     @Test
     @DisplayName("S11: Un abonné retourne un livre en retard - notification de retard")
     public void testS11_ReturnBookLate() {
-        doAnswer(invocation -> {
-            throw new IllegalStateException("Book returned late - notification sent");
-        }).when(library).returnBook(book1, johnny);
-        
-        assertThrows(IllegalStateException.class,
-            () -> library.returnBook(book1, johnny),
-            "Late return should trigger notification");
+        boolean result = library.addBooking(book1, johnny, new Date(System.currentTimeMillis() - 40L * 24 * 60 * 60 * 1000));
+        assertTrue(result);
+
+        library.borrowBook(book1, johnny);
+
+        BookingState state = library.returnBook(book1, johnny);
+        assertEquals(BookingState.RETURN_LATE, state);
     }
-*/
+
 /* 
     @Test
     @DisplayName("S12a: Abonné premier sur la liste de réservation - emprunt réussi")
@@ -200,7 +203,7 @@ public class LibraryTest {
         verify(library).borrowBook(book1, johnny);
     }
 */
-/* 
+/*
     @Test
     @DisplayName("S12b: Abonné pas premier sur la liste - emprunt refusé")
     public void testS12b_BorrowBookNotFirstInLine() {
