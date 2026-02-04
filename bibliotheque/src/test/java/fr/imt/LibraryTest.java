@@ -30,7 +30,7 @@ public class LibraryTest {
         
         book1 = new Book("Livre1","0000000000001",12,"Classique");
         book2 = new Book("Livre2","0000000000002",8,"Dystopie");
-        book3 = new Book("Livre3","0000000000003",15,"Classique");
+        book3 = new Book("Livre3","0000000000003",1,"Classique");
         
         library.addBook(book1);
         library.addBook(book2);
@@ -194,28 +194,16 @@ public class LibraryTest {
         assertEquals(book1.getFirstInLine(), john);
 
         book1.addInLine(john);
-        
+        assertTrue(library.borrowBookForTheQueue(book1));
         
     }
 
-/*
     @Test
     @DisplayName("S12b: Abonné pas premier sur la liste - emprunt refusé")
     public void testS12b_BorrowBookNotFirstInLine() {
-        ISubscriber anotherSubscriber = mock(ISubscriber.class);
-        when(anotherSubscriber.getId()).thenReturn(3);
-        
-        when(book1.getFirstInLine()).thenReturn(anotherSubscriber);
-        
-        doThrow(new IllegalStateException("You are not first in line for this book"))
-            .when(library).borrowBook(book1, johnny);
-        
-        assertNotEquals(johnny, book1.getFirstInLine(), 
-            "Subscriber should not be first in line");
-        
-        assertThrows(IllegalStateException.class,
-            () -> library.borrowBook(book1, johnny),
-            "Borrowing should fail if not first in line");
+        book3.addInLine(john);
+        library.addBooking(book3, johnny, new Date());
+
+        assertFalse(library.borrowBookForTheQueue(book3));
     }
-*/
 }

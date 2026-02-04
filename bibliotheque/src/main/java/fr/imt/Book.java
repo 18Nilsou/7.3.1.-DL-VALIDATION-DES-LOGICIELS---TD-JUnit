@@ -1,6 +1,8 @@
 package fr.imt;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Book implements IBook {
 
@@ -15,7 +17,7 @@ public class Book implements IBook {
         this.isbn = isbn;
         this.title = title;
         this.stock = stock;
-        this.waitlist = new List<>();
+        this.waitlist = new ArrayList<>();
     }
 
     @Override
@@ -25,6 +27,11 @@ public class Book implements IBook {
     @Override
     public String getTitle() {
         return this.title;
+    }
+
+    @Override
+    public String getIsbn() {
+        return this.isbn;
     }
 
     @Override

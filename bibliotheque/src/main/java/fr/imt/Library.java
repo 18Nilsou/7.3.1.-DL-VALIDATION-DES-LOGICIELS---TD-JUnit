@@ -23,6 +23,7 @@ public class Library implements ILibrary {
         this.bookings = new java.util.ArrayList<>();
     }
 
+    @Override
     public List<IBook> getCatalogue() {
         return this.catalogue;
     }
@@ -111,17 +112,19 @@ public class Library implements ILibrary {
         booking.setStatus(BookingState.BORROW);
     }
 
-    private IBooking findBooking(IBook book, ISubscriber subscriber) {
+    @Override
+    public IBooking findBooking(IBook book, ISubscriber subscriber) {
         return bookings.stream()
             .filter(b -> b.getBook().equals(book) && b.getSubscriber().equals(subscriber))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
     }
 
-    private List<IBooking> findBookingByBook(IBook book) {
-        return bookings.stream()
-            .filter(b -> b.getBook().equals(book))
-            .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+    @Override
+    public List<IBooking> findBookingByBook(IBook book) {
+        return this.bookings.stream()
+                .filter(b -> b.getBook().equals(book))
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Override
@@ -225,14 +228,19 @@ public class Library implements ILibrary {
         return catalogue;
     }
 
+    @Override
     public void addInQueue(IBook book, ISubscriber subscriber) {
         book.addInLine(subscriber);
     }
 
+    @Override
     public boolean borrowBookForTheQueue(IBook book) {
 
         ISubscriber nextSubscriber = book.getFirstInLine();
         List<IBooking> listOfBookings = findBookingByBook(book);
+        if(book.getStock() > 0 && listOfBookings.isEmpty()) {
+            return true;
+        }
         
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, 30);
