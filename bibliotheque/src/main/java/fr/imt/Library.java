@@ -8,8 +8,8 @@ public class Library implements ILibrary {
     private List<ISubscriber> subscribers;
     private List<IBooking> bookings;
     private List<IBook> catalogue;
-    public static final String COMMA_DELIMITER = ",";
 
+    public static final String COMMA_DELIMITER = ",";
 
     public Library() {
         this.catalogue = new ArrayList<>(loadCatalogueFromCSV("./src/data/catalogue.csv"));
@@ -118,6 +118,12 @@ public class Library implements ILibrary {
             .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
     }
 
+    private List<IBooking> findBookingByBook(IBook book) {
+        return bookings.stream()
+            .filter(b -> b.getBook().equals(book))
+            .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+    }
+
     @Override
     public List<IBook> searchBooks(HashMap<String,String> mapSearch) {
         List<IBook> results = new ArrayList<>(catalogue);
@@ -217,6 +223,37 @@ public class Library implements ILibrary {
             return List.of();
         }
         return catalogue;
+    }
+
+    public void addInQueue(IBook book, ISubscriber subscriber) {
+        book.addInLine(subscriber);
+    }
+
+    public boolean borrowBookForTheQueue(IBook book) {
+
+        ISubscriber nextSubscriber = book.getFirstInLine();
+        List<IBooking> listOfBookings = findBookingByBook(book);
+        
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, 30);
+        Date futureDate = cal.getTime();
+        
+        boolean flag = true;
+
+        if(book.getStock() > 0 && nextSubscriber != null) {
+            for (IBooking booking : listOfBookings) {
+                if (booking.getBeginDate().before(futureDate)) {
+                    flag = false;
+                }
+            }
+        }
+
+        if(flag){
+            borrowBook(book, nextSubscriber);
+            return true;
+        }
+
+        return false;
     }
 
 }

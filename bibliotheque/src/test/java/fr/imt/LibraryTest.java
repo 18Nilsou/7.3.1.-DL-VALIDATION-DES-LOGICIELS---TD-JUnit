@@ -185,20 +185,19 @@ public class LibraryTest {
         assertEquals(BookingState.RETURN_LATE, state);
     }
 
-/* 
+
     @Test
     @DisplayName("S12a: Abonné premier sur la liste de réservation - emprunt réussi")
     public void testS12a_BorrowBookFirstInLine() {
-        when(book1.getFirstInLine()).thenReturn(johnny);
-        doNothing().when(library).borrowBook(book1, johnny);
         
-        assertEquals(johnny, book1.getFirstInLine(), 
-            "Subscriber should be first in line");
+        book1.addInLine(john);
+        assertEquals(book1.getFirstInLine(), john);
+
+        book1.addInLine(john);
         
-        library.borrowBook(book1, johnny);
-        verify(library).borrowBook(book1, johnny);
+        
     }
-*/
+
 /*
     @Test
     @DisplayName("S12b: Abonné pas premier sur la liste - emprunt refusé")
