@@ -1,7 +1,18 @@
 package fr.imt;
 
-public interface Subscriber {
-	int getId();
-	String getUsername();
-	String getPassword();
+public class Subscriber implements ISubscriber {
+    @Override
+    public int getId() {
+        return 0;
+    }
+
+    @Override
+    public String getUsername() {
+        return "";
+    }
+
+    @Override
+    public String getPassword() {
+        return "";
+    }
 }

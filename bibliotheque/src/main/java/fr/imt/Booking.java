@@ -1,5 +1,4 @@
 package fr.imt;
 
-public interface Booking {
-    
+public class Booking implements IBooking {
 }

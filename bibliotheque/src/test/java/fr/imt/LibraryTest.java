@@ -11,30 +11,30 @@ import java.util.*;
 
 public class LibraryTest {
 
-    private Library library;
-    private Subscriber john;
-    private Subscriber johnny;
-    private Book book1;
-    private Book book2;
-    private Book book3;
+    private ILibrary library;
+    private ISubscriber john;
+    private ISubscriber johnny;
+    private IBook book1;
+    private IBook book2;
+    private IBook book3;
 
     @BeforeEach
     public void init() {
-        library = mock(Library.class);
+        library = mock(ILibrary.class);
         
-        john = mock(Subscriber.class);
+        john = mock(ISubscriber.class);
         when(john.getId()).thenReturn(1);
         when(john.getUsername()).thenReturn("John");
         when(john.getPassword()).thenReturn("password1");
         
-        johnny = mock(Subscriber.class);
+        johnny = mock(ISubscriber.class);
         when(johnny.getId()).thenReturn(2);
         when(johnny.getUsername()).thenReturn("Johnny");
         when(johnny.getPassword()).thenReturn("password2");
         
-        book1 = mock(Book.class);
-        book2 = mock(Book.class);
-        book3 = mock(Book.class);
+        book1 = mock(IBook.class);
+        book2 = mock(IBook.class);
+        book3 = mock(IBook.class);
     }
 
     @Test
@@ -59,12 +59,12 @@ public class LibraryTest {
         HashMap<String, String> searchParams = new HashMap<>();
         searchParams.put("category", "Polar");
         
-        List<Book> polarBooks = Arrays.asList(book1, book2);
+        List<IBook> polarBooks = Arrays.asList(book1, book2);
         when(library.searchBook(searchParams)).thenReturn(polarBooks);
         
         assertTrue(library.logIn("johnny", "password2"));
         
-        List<Book> result = library.searchBook(searchParams);
+        List<IBook> result = library.searchBook(searchParams);
         assertEquals(2, result.size());
         assertTrue(result.contains(book1));
         assertTrue(result.contains(book2));
@@ -78,7 +78,7 @@ public class LibraryTest {
         
         when(library.searchBook(searchParams)).thenReturn(Collections.emptyList());
         
-        List<Book> result = library.searchBook(searchParams);
+        List<IBook> result = library.searchBook(searchParams);
         assertEquals(0, result.size(), 
             "Searching for a missing category should return an empty list");
     }
@@ -113,7 +113,7 @@ public class LibraryTest {
     @Test
     @DisplayName("S6: Réservation d'un ouvrage n'existant pas dans le fonds")
     public void testS6_BookNonExistentBook() {
-        Book nonExistentBook = mock(Book.class);
+        IBook nonExistentBook = mock(IBook.class);
         Date reservationDate = new Date();
         
         when(library.addBooking(nonExistentBook, johnny, reservationDate))
@@ -133,11 +133,11 @@ public class LibraryTest {
         searchOverdue.put("subscriber", johnny.getUsername());
         searchOverdue.put("status", "overdue");
         
-        List<Book> overdueBooks = Arrays.asList(book1, book2);
+        List<IBook> overdueBooks = Arrays.asList(book1, book2);
         when(library.searchBook(searchOverdue)).thenReturn(overdueBooks);
         
         assertTrue(library.logIn("johnny", "password2"));
-        List<Book> result = library.searchBook(searchOverdue);
+        List<IBook> result = library.searchBook(searchOverdue);
         
         assertEquals(2, result.size());
     }
@@ -161,10 +161,10 @@ public class LibraryTest {
         searchOverdue.put("status", "overdue");
         searchOverdue.put("checkDate", checkDate.getTime().toString());
         
-        List<Book> overdueBooks = Arrays.asList(book1);
+        List<IBook> overdueBooks = Arrays.asList(book1);
         when(library.searchBook(searchOverdue)).thenReturn(overdueBooks);
         
-        List<Book> result = library.searchBook(searchOverdue);
+        List<IBook> result = library.searchBook(searchOverdue);
         
         assertTrue(result.contains(book1), 
             "Book borrowed on January 30 should be overdue on March 1");
@@ -218,7 +218,7 @@ public class LibraryTest {
     @Test
     @DisplayName("S12b: Abonné pas premier sur la liste - emprunt refusé")
     public void testS12b_BorrowBookNotFirstInLine() {
-        Subscriber anotherSubscriber = mock(Subscriber.class);
+        ISubscriber anotherSubscriber = mock(ISubscriber.class);
         when(anotherSubscriber.getId()).thenReturn(3);
         
         when(book1.getFirstInLine()).thenReturn(anotherSubscriber);
