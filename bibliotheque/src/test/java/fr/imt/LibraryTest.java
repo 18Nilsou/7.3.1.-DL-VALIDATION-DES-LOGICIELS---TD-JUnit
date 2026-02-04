@@ -20,7 +20,7 @@ public class LibraryTest {
 
     @BeforeEach
     public void init() {
-        library = new Library();
+        library = new Library("../../test/data/catalogue.csv");
         
         john = new Subscriber(1, "John", "password1");
         johnny = new Subscriber(2, "Johnny", "password2");

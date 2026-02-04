@@ -1,17 +1,24 @@
 package fr.imt;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
 public class Library implements ILibrary {
-    
-    private List<ISubscriber> subscribers;
 
-    public Library() {
+    private List<ISubscriber> subscribers;
+    private List<Book> catalogue;
+    public static final String COMMA_DELIMITER = ",";
+
+
+    public Library(String pathCatalogue) {
+        this.catalogue = loadCatalogueFromCSV(pathCatalogue);
         this.subscribers = new java.util.ArrayList<>();
     }
-    
+
+
+
     @Override
     public boolean logIn(String username, String password) {
         ISubscriber subscriber = subscribers.stream()
@@ -66,5 +73,26 @@ public class Library implements ILibrary {
     @Override
     public boolean addBooking(IBook book, ISubscriber subscriber, Date beginDate) {
         return false;
+    }
+    @Override
+    public List<Book> loadCatalogueFromCSV(String path) {
+        List<Book> catalogue = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(COMMA_DELIMITER);
+                String title = values[0];
+                int isbn = Integer.parseInt(values[1]);
+                int stock = Integer.parseInt(values[2]);
+                String category = values[3];
+
+                catalogue.add(new Book(isbn, title, stock, category));
+            }
+        }
+        catch (IOException e) {
+            System.out.println("Error : " + e);
+            return List.of();
+        }
+        return catalogue;
     }
 }

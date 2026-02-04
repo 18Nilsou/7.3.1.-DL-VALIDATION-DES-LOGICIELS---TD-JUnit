@@ -1,6 +1,20 @@
 package fr.imt;
 
 public class Book implements IBook {
+
+    private String title;
+    private int isbn;
+    private int nbDisponible;
+    private String genre;
+
+
+    public Book(int isbn, String title, int nbDisponible, String genre) {
+        this.genre = genre;
+        this.isbn = isbn;
+        this.title = title;
+        this.nbDisponible = nbDisponible;
+    }
+
     @Override
     public ISubscriber getFirstInLine() {
         return null;
