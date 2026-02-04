@@ -1,6 +1,11 @@
 # Java
+
 target/
 **/target/
+
+/target/
+/target/*
+
 *.class
 
 # Maven
