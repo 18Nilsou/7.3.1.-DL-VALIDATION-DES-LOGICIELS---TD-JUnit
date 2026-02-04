@@ -51,7 +51,7 @@ public class LibraryTest {
 
         assertTrue(actualMessage.contains(expectedMessage));
     }
-/* 
+ 
     @Test
     @DisplayName("S2: johnny se connecte et recherche des livres Polar")
     public void testS2_LoginSuccessAndSearchPolars() {
@@ -87,7 +87,7 @@ public class LibraryTest {
         assertEquals(0, result.size(), 
             "Searching for a missing category should return an empty list");
     }
-*/
+
     @Test
     @DisplayName("S4: Réservation d'un ouvrage existant mais indisponible")
     public void testS4_BookUnavailableBook() {
@@ -125,7 +125,7 @@ public class LibraryTest {
             () -> library.addBooking(nonExistentBook, johnny, reservationDate),
             "Booking a non-existent book should throw IllegalArgumentException");
     }
-/* 
+ 
     @Test
     @DisplayName("S7: Un abonné s'identifie et obtient la liste de ses emprunts en retard")
     public void testS7_GetOverdueBorrowings() {
@@ -235,5 +235,5 @@ public class LibraryTest {
             () -> library.borrowBook(book1, johnny),
             "Borrowing should fail if not first in line");
     }
-    */
+    
 }
