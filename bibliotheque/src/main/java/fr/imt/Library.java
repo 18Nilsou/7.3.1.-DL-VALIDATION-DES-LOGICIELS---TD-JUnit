@@ -36,7 +36,7 @@ public class Library implements ILibrary {
                 .filter(sub -> sub.getUsername().equals(username))
                 .findFirst()
                 .orElse(null);
-        if (subscriber.getUsername().equals(username) && subscriber.getPassword().equals(password)) {
+        if (subscriber != null && subscriber.getPassword().equals(password)) {
             return true;
         }
         throw new IllegalArgumentException("Invalid login");
@@ -50,19 +50,67 @@ public class Library implements ILibrary {
         return false;
     }
 
+    public List<IBook> getLateBookings(ISubscriber subscriber) {
+        List<IBook> lateBooks = new ArrayList<>();
+        Date currentDate = new Date();
+        for (IBooking booking : bookings) {
+            if (!booking.getSubscriber().equals(subscriber)) {
+                continue;
+            }
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(booking.getBeginDate());
+            cal.add(Calendar.DAY_OF_MONTH, 30);
+            Date dueDate = cal.getTime();
+            if (currentDate.after(dueDate)) {
+                booking.setStatus(BookingState.LATE);
+                lateBooks.add(booking.getBook());
+            }
+        }
+        return lateBooks;
+    }
+
     @Override
     public void returnBook(IBook book, ISubscriber subscriber) {
-
+        IBooking booking = findBooking(book, subscriber);
+        if (booking.getStatus() != BookingState.BORROW && booking.getStatus() != BookingState.LATE) {
+            throw new IllegalArgumentException("Book is not in BORROW or LATE state");
+        }
+        booking.setStatus(BookingState.RETURN);
     }
 
     @Override
     public void borrowBook(IBook book, ISubscriber subscriber) {
+        IBooking booking = findBooking(book, subscriber);
+        if (booking.getStatus() != BookingState.BOOKED) {
+            throw new IllegalArgumentException("Book is not in BOOKED state");
+        }
+        if (booking.getBeginDate().after(new Date())) {
+            throw new IllegalArgumentException("Booking start date is in the future");
+        }
+        booking.setStatus(BookingState.BORROW);
+    }
 
+    private IBooking findBooking(IBook book, ISubscriber subscriber) {
+        return bookings.stream()
+            .filter(b -> b.getBook().equals(book) && b.getSubscriber().equals(subscriber))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
     }
 
     @Override
-    public List<IBook> searchBook(HashMap<String, String> mapSearch) {
-        return List.of();
+    public List<IBook> searchBook(HashMap<String,String> mapSearch) {
+        List<IBook> results = new ArrayList<>(catalogue);
+
+        if (mapSearch.containsKey("title")) {
+            String title = mapSearch.get("title").toLowerCase();
+            results.removeIf(book -> !((Book) book).getTitle().toLowerCase().contains(title));
+        }
+        if (mapSearch.containsKey("genre")) {
+            String genre = mapSearch.get("genre").toLowerCase();
+            results.removeIf(book -> !book.getType().toLowerCase().equals(genre));
+        }
+
+        return results;
     }
 
 

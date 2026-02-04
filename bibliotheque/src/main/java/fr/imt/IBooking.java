@@ -1,7 +1,11 @@
 package fr.imt;
 
+import java.util.Date;
+
 public interface IBooking {
     IBook getBook();
     ISubscriber getSubscriber();
-    java.util.Date getBeginDate();
+    Date getBeginDate();
+    BookingState getStatus();
+    void setStatus(BookingState status);
 }

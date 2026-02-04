@@ -27,6 +27,10 @@ public class Book implements IBook {
 
     @Override
     public String getType() {
-        return "";
+        return this.genre;
+    }
+    @Override
+    public String getTitle() {
+        return this.title;
     }
 }

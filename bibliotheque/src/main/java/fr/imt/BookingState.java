@@ -1,6 +1,6 @@
 package fr.imt;
 
-public enum BookState {
+public enum BookingState {
     BOOKED,
     BORROW,
     RETURN,

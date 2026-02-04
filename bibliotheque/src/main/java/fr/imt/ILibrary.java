@@ -1,12 +1,12 @@
 package fr.imt;
-import java.util.Date;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 public interface ILibrary {
     boolean logIn(String username, String password);
-    
+
     void returnBook(IBook book, ISubscriber subscriber);
     void borrowBook(IBook book, ISubscriber subscriber);
     List<IBook> searchBook(HashMap<String,String> mapSearch);
@@ -16,4 +16,6 @@ public interface ILibrary {
     void getBookingByBook(IBook book);
     boolean addBooking(IBook book, ISubscriber subscriber, Date beginDate);
     List<Book> loadCatalogueFromCSV(String path);
+
+    List<IBook> getLateBookings(ISubscriber subscriber);
 }

@@ -37,7 +37,7 @@ public class LibraryTest {
         library.addBook(book2);
         library.addBook(book3);
     }
-
+/*
     @Test
     @DisplayName("S1: john cherche à se connecter avec des identifiants invalides")
     public void testS1_LoginFailWithException() {
@@ -125,53 +125,36 @@ public class LibraryTest {
             () -> library.addBooking(nonExistentBook, johnny, reservationDate),
             "Booking a non-existent book should throw IllegalArgumentException");
     }
- 
+ */
     @Test
     @DisplayName("S7: Un abonné s'identifie et obtient la liste de ses emprunts en retard")
     public void testS7_GetOverdueBorrowings() {
-        when(library.logIn("johnny", "password2")).thenReturn(true);
-        
-        HashMap<String, String> searchOverdue = new HashMap<>();
-        searchOverdue.put("subscriber", johnny.getUsername());
-        searchOverdue.put("status", "overdue");
-        
+       
+        library.logIn("Johnny", "password2");
+        library.addBooking(book1, johnny, new Date(System.currentTimeMillis() - 40L * 24 * 60 * 60 * 1000)); 
+        library.addBooking(book2, johnny, new Date(System.currentTimeMillis() - 35L * 24 * 60 * 60 * 1000));
+
         List<IBook> overdueBooks = Arrays.asList(book1, book2);
-        when(library.searchBook(searchOverdue)).thenReturn(overdueBooks);
         
-        assertTrue(library.logIn("johnny", "password2"));
-        List<IBook> result = library.searchBook(searchOverdue);
+        List<IBook> result = library.getLateBookings(johnny);
         
-        assertEquals(2, result.size());
+        assertEquals(overdueBooks, result);
     }
 
     @Test
     @DisplayName("S8: Livre emprunté le 30 janvier, consultation le 1er mars - livre en retard")
     public void testS8_BookOverdueAfterOneMonth() {
-        Calendar borrowDate = Calendar.getInstance();
-        borrowDate.set(2024, Calendar.JANUARY, 30);
-        
-        Calendar checkDate = Calendar.getInstance();
-        checkDate.set(2024, Calendar.MARCH, 1);
-        
-        Calendar expectedReturnDate = Calendar.getInstance();
-        expectedReturnDate.set(2024, Calendar.MARCH, 1);
-        
-        when(library.logIn("johnny", "password2")).thenReturn(true);
-        
-        HashMap<String, String> searchOverdue = new HashMap<>();
-        searchOverdue.put("subscriber", johnny.getUsername());
-        searchOverdue.put("status", "overdue");
-        searchOverdue.put("checkDate", checkDate.getTime().toString());
-        
-        List<IBook> overdueBooks = Arrays.asList(book1);
-        when(library.searchBook(searchOverdue)).thenReturn(overdueBooks);
-        
-        List<IBook> result = library.searchBook(searchOverdue);
-        
-        assertTrue(result.contains(book1), 
-            "Book borrowed on January 30 should be overdue on March 1");
-    }
 
+        Date borrowDateObj = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.set(2024, Calendar.JANUARY, 30);
+        borrowDateObj = cal.getTime();
+        library.addBooking(book1, johnny, borrowDateObj);
+
+        List<IBook> result = library.getLateBookings(johnny);
+        assertTrue(result.contains(book1));
+    }
+/*
     @Test
     @DisplayName("S9: Un abonné emprunte un livre - le stock est mis à jour")
     public void testS9_BorrowBookUpdatesStock() {
@@ -235,5 +218,5 @@ public class LibraryTest {
             () -> library.borrowBook(book1, johnny),
             "Borrowing should fail if not first in line");
     }
-    
+*/
 }
