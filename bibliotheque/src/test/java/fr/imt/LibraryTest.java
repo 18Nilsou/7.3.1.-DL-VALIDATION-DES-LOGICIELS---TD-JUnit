@@ -20,17 +20,13 @@ public class LibraryTest {
 
     @BeforeEach
     public void init() {
-        library = mock(ILibrary.class);
+        library = new Library();
         
-        john = mock(ISubscriber.class);
-        when(john.getId()).thenReturn(1);
-        when(john.getUsername()).thenReturn("John");
-        when(john.getPassword()).thenReturn("password1");
+        john = new Subscriber(1, "John", "password1");
+        johnny = new Subscriber(2, "Johnny", "password2");
         
-        johnny = mock(ISubscriber.class);
-        when(johnny.getId()).thenReturn(2);
-        when(johnny.getUsername()).thenReturn("Johnny");
-        when(johnny.getPassword()).thenReturn("password2");
+        library.addSubscriber(john);
+        library.addSubscriber(johnny);
         
         book1 = mock(IBook.class);
         book2 = mock(IBook.class);
@@ -40,11 +36,15 @@ public class LibraryTest {
     @Test
     @DisplayName("S1: john cherche à se connecter avec des identifiants invalides")
     public void testS1_LoginFailWithException() {
-        when(library.logIn("john", "wrongpassword")).thenThrow(new IllegalArgumentException("Invalid credentials"));
         
-        assertThrows(IllegalArgumentException.class,
-                () -> library.logIn("john", "wrongpassword"),
-                "Invalid login should throw IllegalArgumentException");
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            library.logIn("John", "wrongpassword");
+        });
+        
+        String expectedMessage = "Invalid login";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test

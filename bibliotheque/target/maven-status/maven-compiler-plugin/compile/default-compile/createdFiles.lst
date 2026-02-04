@@ -1,5 +1,10 @@
+fr/imt/IBook.class
+fr/imt/ISubscriber.class
 fr/imt/App.class
-fr/imt/Subscriber.class
 fr/imt/Booking.class
 fr/imt/Book.class
+fr/imt/BookState.class
+fr/imt/Subscriber.class
+fr/imt/IBooking.class
+fr/imt/ILibrary.class
 fr/imt/Library.class

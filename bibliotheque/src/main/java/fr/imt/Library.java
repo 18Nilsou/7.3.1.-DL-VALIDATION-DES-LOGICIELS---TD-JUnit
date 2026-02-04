@@ -5,8 +5,30 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Library implements ILibrary {
+    
+    private List<ISubscriber> subscribers;
+
+    public Library() {
+        this.subscribers = new java.util.ArrayList<>();
+    }
+    
     @Override
     public boolean logIn(String username, String password) {
+        ISubscriber subscriber = subscribers.stream()
+                .filter(sub -> sub.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
+        if (subscriber.getUsername().equals(username) && subscriber.getPassword().equals(password)) {
+            return true;
+        }
+        throw new IllegalArgumentException("Invalid login");
+    }
+
+    @Override
+    public boolean addSubscriber(ISubscriber subscriber) {
+        if (this.subscribers.add(subscriber)) {
+            return true;
+        }
         return false;
     }
 
@@ -25,10 +47,6 @@ public class Library implements ILibrary {
         return List.of();
     }
 
-    @Override
-    public boolean addSubscriber(ISubscriber subscriber) {
-        return false;
-    }
 
     @Override
     public void addBook(IBook book) {
