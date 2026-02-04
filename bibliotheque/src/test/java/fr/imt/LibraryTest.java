@@ -4,11 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
-import java.util.*;
 
 public class LibraryTest {
 
@@ -55,24 +54,19 @@ public class LibraryTest {
     @Test
     @DisplayName("S2: johnny se connecte et recherche des livres Polar")
     public void testS2_LoginSuccessAndSearchPolars() {
-        when(book1.getType()).thenReturn("Polar");
-        when(book2.getType()).thenReturn("Polar");
-        when(book3.getType()).thenReturn("Roman");
-        
-        when(library.logIn("johnny", "password2")).thenReturn(true);
+
+        assertTrue(library.logIn("Johnny", "password2"));
         
         HashMap<String, String> searchParams = new HashMap<>();
-        searchParams.put("category", "Polar");
-        
-        List<IBook> polarBooks = Arrays.asList(book1, book2);
-        when(library.searchBook(searchParams)).thenReturn(polarBooks);
-        
-        assertTrue(library.logIn("johnny", "password2"));
-        
-        List<IBook> result = library.searchBook(searchParams);
-        assertEquals(2, result.size());
-        assertTrue(result.contains(book1));
-        assertTrue(result.contains(book2));
+        searchParams.put("category", "Fantasy");
+
+        IBook b1 = new Book("9782070541270","Harry Potter à l'école des sorciers",25,"Fantasy");
+        IBook b2 = new Book("9782267013160", "Le Seigneur des Anneaux",10,"Fantasy");
+
+        List<IBook> result = library.searchBooks(searchParams);
+
+        assertTrue(result.contains(b1));
+        assertTrue(result.contains(b2));
     }
 
     @Test
@@ -81,9 +75,8 @@ public class LibraryTest {
         HashMap<String, String> searchParams = new HashMap<>();
         searchParams.put("category", "Voyage");
         
-        when(library.searchBook(searchParams)).thenReturn(Collections.emptyList());
-        
-        List<IBook> result = library.searchBook(searchParams);
+
+        List<IBook> result = library.searchBooks(searchParams);
         assertEquals(0, result.size(), 
             "Searching for a missing category should return an empty list");
     }
@@ -136,10 +129,10 @@ public class LibraryTest {
         searchOverdue.put("status", "overdue");
         
         List<IBook> overdueBooks = Arrays.asList(book1, book2);
-        when(library.searchBook(searchOverdue)).thenReturn(overdueBooks);
+        when(library.searchBooks(searchOverdue)).thenReturn(overdueBooks);
         
         assertTrue(library.logIn("johnny", "password2"));
-        List<IBook> result = library.searchBook(searchOverdue);
+        List<IBook> result = library.searchBooks(searchOverdue);
         
         assertEquals(2, result.size());
     }
@@ -164,11 +157,11 @@ public class LibraryTest {
         searchOverdue.put("checkDate", checkDate.getTime().toString());
         
         List<IBook> overdueBooks = Arrays.asList(book1);
-        when(library.searchBook(searchOverdue)).thenReturn(overdueBooks);
+        when(library.searchBooks(searchOverdue)).thenReturn(overdueBooks);
         
-        List<IBook> result = library.searchBook(searchOverdue);
+        List<IBook> result = library.searchBooks(searchOverdue);
         
-        assertTrue(result.contains(book1), 
+        assertTrue(result.contains(book1),
             "Book borrowed on January 30 should be overdue on March 1");
     }
 

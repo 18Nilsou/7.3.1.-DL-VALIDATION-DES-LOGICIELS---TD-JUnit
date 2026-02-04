@@ -9,7 +9,7 @@ public interface ILibrary {
     
     void returnBook(IBook book, ISubscriber subscriber);
     void borrowBook(IBook book, ISubscriber subscriber);
-    List<IBook> searchBook(HashMap<String,String> mapSearch);
+    List<IBook> searchBooks(HashMap<String,String> mapSearch);
     boolean addSubscriber(ISubscriber subscriber);
     void addBook(IBook book);
     void getBooking(IBook book, ISubscriber subscriber);
