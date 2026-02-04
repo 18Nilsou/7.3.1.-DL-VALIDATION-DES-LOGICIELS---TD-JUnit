@@ -4,11 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
-import java.util.*;
 
 public class LibraryTest {
 
@@ -37,7 +36,7 @@ public class LibraryTest {
         library.addBook(book2);
         library.addBook(book3);
     }
-/*
+
     @Test
     @DisplayName("S1: john cherche à se connecter avec des identifiants invalides")
     public void testS1_LoginFailWithException() {
@@ -55,24 +54,19 @@ public class LibraryTest {
     @Test
     @DisplayName("S2: johnny se connecte et recherche des livres Polar")
     public void testS2_LoginSuccessAndSearchPolars() {
-        when(book1.getType()).thenReturn("Polar");
-        when(book2.getType()).thenReturn("Polar");
-        when(book3.getType()).thenReturn("Roman");
-        
-        when(library.logIn("johnny", "password2")).thenReturn(true);
+
+        assertTrue(library.logIn("Johnny", "password2"));
         
         HashMap<String, String> searchParams = new HashMap<>();
-        searchParams.put("category", "Polar");
-        
-        List<IBook> polarBooks = Arrays.asList(book1, book2);
-        when(library.searchBook(searchParams)).thenReturn(polarBooks);
-        
-        assertTrue(library.logIn("johnny", "password2"));
-        
-        List<IBook> result = library.searchBook(searchParams);
-        assertEquals(2, result.size());
-        assertTrue(result.contains(book1));
-        assertTrue(result.contains(book2));
+        searchParams.put("category", "Fantasy");
+
+        IBook b1 = new Book("9782070541270","Harry Potter à l'école des sorciers",25,"Fantasy");
+        IBook b2 = new Book("9782267013160", "Le Seigneur des Anneaux",10,"Fantasy");
+
+        List<IBook> result = library.searchBooks(searchParams);
+
+        assertTrue(result.contains(b1));
+        assertTrue(result.contains(b2));
     }
 
     @Test
@@ -81,9 +75,8 @@ public class LibraryTest {
         HashMap<String, String> searchParams = new HashMap<>();
         searchParams.put("category", "Voyage");
         
-        when(library.searchBook(searchParams)).thenReturn(Collections.emptyList());
-        
-        List<IBook> result = library.searchBook(searchParams);
+
+        List<IBook> result = library.searchBooks(searchParams);
         assertEquals(0, result.size(), 
             "Searching for a missing category should return an empty list");
     }
@@ -125,7 +118,7 @@ public class LibraryTest {
             () -> library.addBooking(nonExistentBook, johnny, reservationDate),
             "Booking a non-existent book should throw IllegalArgumentException");
     }
- */
+ 
     @Test
     @DisplayName("S7: Un abonné s'identifie et obtient la liste de ses emprunts en retard")
     public void testS7_GetOverdueBorrowings() {
@@ -154,7 +147,7 @@ public class LibraryTest {
         List<IBook> result = library.getLateBookings(johnny);
         assertTrue(result.contains(book1));
     }
-/*
+/* 
     @Test
     @DisplayName("S9: Un abonné emprunte un livre - le stock est mis à jour")
     public void testS9_BorrowBookUpdatesStock() {
@@ -164,7 +157,8 @@ public class LibraryTest {
         
         verify(library).borrowBook(book1, johnny);
     }
-
+*/
+/* 
     @Test
     @DisplayName("S10: Un abonné retourne un livre dans les temps")
     public void testS10_ReturnBookOnTime() {
@@ -174,7 +168,8 @@ public class LibraryTest {
         
         verify(library).returnBook(book1, johnny);
     }
-
+*/
+/* 
     @Test
     @DisplayName("S11: Un abonné retourne un livre en retard - notification de retard")
     public void testS11_ReturnBookLate() {
@@ -186,7 +181,8 @@ public class LibraryTest {
             () -> library.returnBook(book1, johnny),
             "Late return should trigger notification");
     }
-
+*/
+/* 
     @Test
     @DisplayName("S12a: Abonné premier sur la liste de réservation - emprunt réussi")
     public void testS12a_BorrowBookFirstInLine() {
@@ -199,7 +195,8 @@ public class LibraryTest {
         library.borrowBook(book1, johnny);
         verify(library).borrowBook(book1, johnny);
     }
-
+*/
+/* 
     @Test
     @DisplayName("S12b: Abonné pas premier sur la liste - emprunt refusé")
     public void testS12b_BorrowBookNotFirstInLine() {

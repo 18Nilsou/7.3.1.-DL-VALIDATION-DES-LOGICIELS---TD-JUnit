@@ -1,13 +1,10 @@
 package fr.imt;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class Library implements ILibrary {
 
-    
     private List<ISubscriber> subscribers;
     private List<IBooking> bookings;
     private List<IBook> catalogue;
@@ -15,7 +12,7 @@ public class Library implements ILibrary {
 
 
     public Library() {
-        this.catalogue = new ArrayList<>(loadCatalogueFromCSV("../data/catalogue.csv"));
+        this.catalogue = new ArrayList<>(loadCatalogueFromCSV("./src/data/catalogue.csv"));
         this.subscribers = new java.util.ArrayList<>();
         this.bookings = new java.util.ArrayList<>();
     }
@@ -36,7 +33,7 @@ public class Library implements ILibrary {
                 .filter(sub -> sub.getUsername().equals(username))
                 .findFirst()
                 .orElse(null);
-        if (subscriber != null && subscriber.getPassword().equals(password)) {
+        if (subscriber != null && subscriber.getUsername().equals(username) && subscriber.getPassword().equals(password)) {
             return true;
         }
         throw new IllegalArgumentException("Invalid login");
@@ -44,10 +41,8 @@ public class Library implements ILibrary {
 
     @Override
     public boolean addSubscriber(ISubscriber subscriber) {
-        if (this.subscribers.add(subscriber)) {
-            return true;
-        }
-        return false;
+        this.subscribers.add(subscriber);
+        return this.subscribers.contains(subscriber);
     }
 
     public List<IBook> getLateBookings(ISubscriber subscriber) {
@@ -98,16 +93,16 @@ public class Library implements ILibrary {
     }
 
     @Override
-    public List<IBook> searchBook(HashMap<String,String> mapSearch) {
+    public List<IBook> searchBooks(HashMap<String,String> mapSearch) {
         List<IBook> results = new ArrayList<>(catalogue);
 
         if (mapSearch.containsKey("title")) {
             String title = mapSearch.get("title").toLowerCase();
             results.removeIf(book -> !((Book) book).getTitle().toLowerCase().contains(title));
         }
-        if (mapSearch.containsKey("genre")) {
-            String genre = mapSearch.get("genre").toLowerCase();
-            results.removeIf(book -> !book.getType().toLowerCase().equals(genre));
+        if (mapSearch.containsKey("category")) {
+            String category = mapSearch.get("category").toLowerCase();
+            results.removeIf(book -> !book.getCategory().toLowerCase().equals(category));
         }
 
         return results;
@@ -116,8 +111,8 @@ public class Library implements ILibrary {
 
     @Override
     public void addBook(IBook book) {
-        if (book != null && book instanceof Book) {
-            this.catalogue.add((Book) book);
+        if (book instanceof Book) {
+            this.catalogue.add(book);
         }
     }
 
@@ -157,25 +152,45 @@ public class Library implements ILibrary {
         return true;
     }
 
+    // Java
     @Override
     public List<Book> loadCatalogueFromCSV(String path) {
         List<Book> catalogue = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(COMMA_DELIMITER);
-                String title = values[0];
-                String isbn = values[1];
-                int stock = Integer.parseInt(values[2]);
-                String category = values[3];
 
+        InputStream is = getClass().getResourceAsStream(path);
+        try (BufferedReader br = is != null
+                ? new BufferedReader(new InputStreamReader(is, java.nio.charset.StandardCharsets.UTF_8))
+                : java.nio.file.Files.newBufferedReader(java.nio.file.Paths.get(path), java.nio.charset.StandardCharsets.UTF_8)) {
+
+            String line;
+            boolean first = true;
+            while ((line = br.readLine()) != null) {
+                if (first) { // skip header
+                    first = false;
+                    if (line.toLowerCase().contains("nom du livre") || line.toLowerCase().contains("num isbn")) {
+                        continue;
+                    }
+                }
+                String[] values = line.split(COMMA_DELIMITER);
+                if (values.length < 4) continue;
+                String title = values[0].replaceAll("^\"|\"$", "").trim();
+                String isbn = values[1].replaceAll("^\"|\"$", "").trim();
+                String stockStr = values[2].replaceAll("^\"|\"$", "").trim();
+                String category = values[3].replaceAll("^\"|\"$", "").trim();
+
+                int stock;
+                try {
+                    stock = Integer.parseInt(stockStr);
+                } catch (NumberFormatException e) {
+                    continue; // skip malformed line
+                }
                 catalogue.add(new Book(isbn, title, stock, category));
             }
-        }
-        catch (IOException e) {
-            System.out.println("Error : " + e);
+        } catch (IOException e) {
+            System.out.println("Error loading CSV: " + e);
             return List.of();
         }
         return catalogue;
     }
+
 }
