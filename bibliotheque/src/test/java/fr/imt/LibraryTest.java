@@ -147,17 +147,21 @@ public class LibraryTest {
         List<IBook> result = library.getLateBookings(johnny);
         assertTrue(result.contains(book1));
     }
-/* 
+ 
     @Test
     @DisplayName("S9: Un abonné emprunte un livre - le stock est mis à jour")
     public void testS9_BorrowBookUpdatesStock() {
-        doNothing().when(library).borrowBook(book1, johnny);
-        
+
+        library.addBooking(book1, johnny, new Date());
         library.borrowBook(book1, johnny);
-        
-        verify(library).borrowBook(book1, johnny);
+        library.getCatalogue().stream()
+            .filter(b -> b.equals(book1))
+            .findFirst()
+            .ifPresent(b -> {
+                assertEquals(11, ((Book) b).getStock());
+            });
     }
-*/
+
 /* 
     @Test
     @DisplayName("S10: Un abonné retourne un livre dans les temps")

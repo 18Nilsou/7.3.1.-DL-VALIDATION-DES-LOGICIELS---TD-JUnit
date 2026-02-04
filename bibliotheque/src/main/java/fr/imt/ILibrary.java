@@ -16,6 +16,6 @@ public interface ILibrary {
     void getBookingByBook(IBook book);
     boolean addBooking(IBook book, ISubscriber subscriber, Date beginDate);
     List<Book> loadCatalogueFromCSV(String path);
-
+    List<IBook> getCatalogue();
     List<IBook> getLateBookings(ISubscriber subscriber);
 }

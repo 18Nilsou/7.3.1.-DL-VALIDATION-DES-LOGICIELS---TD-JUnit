@@ -71,6 +71,12 @@ public class Library implements ILibrary {
             throw new IllegalArgumentException("Book is not in BORROW or LATE state");
         }
         booking.setStatus(BookingState.RETURN);
+        for (IBook b : catalogue) {
+            if (b.equals(book)) {
+                ((Book) b).incrementStock();
+                break;
+            }
+        }
     }
 
     @Override
@@ -82,6 +88,17 @@ public class Library implements ILibrary {
         if (booking.getBeginDate().after(new Date())) {
             throw new IllegalArgumentException("Booking start date is in the future");
         }
+        
+        for (IBook b : catalogue) {
+            if (b.equals(book)) {
+                if (((Book) b).getStock() <= 0) {
+                    throw new IllegalArgumentException("No stock available for this book");
+                }
+                ((Book) b).decrementStock();
+                break;
+            }
+        }
+
         booking.setStatus(BookingState.BORROW);
     }
 

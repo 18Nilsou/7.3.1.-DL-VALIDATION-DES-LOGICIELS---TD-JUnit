@@ -54,4 +54,14 @@ public class Book implements IBook {
         Book book = (Book) obj;
         return isbn.equals(book.isbn);
     }
+
+    public int getStock() {
+        return stock;
+    }
+    public void decrementStock() {
+        this.stock--;
+    }
+    public void incrementStock() {
+        this.stock++;
+    }
 }
