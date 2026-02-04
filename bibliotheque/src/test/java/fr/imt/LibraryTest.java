@@ -41,9 +41,7 @@ public class LibraryTest {
     @DisplayName("S1: john cherche à se connecter avec des identifiants invalides")
     public void testS1_LoginFailWithException() {
         
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            library.logIn("John", "wrongpassword");
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> library.logIn("John", "wrongpassword"));
         
         String expectedMessage = "Invalid login";
         String actualMessage = exception.getMessage();
@@ -88,9 +86,7 @@ public class LibraryTest {
         Date reservationDate = new Date();
         library.addBooking(book1, johnny, reservationDate);
                 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            library.addBooking(book1, john, reservationDate);
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> library.addBooking(book1, john, reservationDate));
         
         String expectedMessage = "Book is already booked for the given period";
         String actualMessage = exception.getMessage();
