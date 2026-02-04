@@ -3,12 +3,12 @@ package fr.imt;
 public class Book implements IBook {
 
     private String title;
-    private int isbn;
+    private String isbn;
     private int nbDisponible;
     private String genre;
 
 
-    public Book(int isbn, String title, int nbDisponible, String genre) {
+    public Book(String isbn, String title, int nbDisponible, String genre) {
         this.genre = genre;
         this.isbn = isbn;
         this.title = title;
