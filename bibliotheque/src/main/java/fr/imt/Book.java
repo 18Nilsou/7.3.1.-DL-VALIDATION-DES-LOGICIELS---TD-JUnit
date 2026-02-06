@@ -44,7 +44,6 @@ public class Book implements IBook {
         return details;
     }
 
-    //ajouter la fonction Equal :
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

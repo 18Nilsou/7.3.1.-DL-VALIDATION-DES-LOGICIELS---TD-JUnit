@@ -15,16 +15,15 @@ public interface ILibrary {
     List<IBooking> findBookingByBook(IBook book);
 
     List<IBook> searchBooks(HashMap<String,String> mapSearch);
+    
     boolean addSubscriber(ISubscriber subscriber);
     void addBook(IBook book);
-    void getBooking(IBook book, ISubscriber subscriber);
-    void getBookingByBook(IBook book);
     boolean addBooking(IBook book, ISubscriber subscriber, Date beginDate);
+    
     List<Book> loadCatalogueFromCSV(String path);
     List<IBook> getCatalogue();
     List<IBook> getLateBookings(ISubscriber subscriber);
 
     void addInQueue(IBook book, ISubscriber subscriber);
-
     boolean borrowBookForTheQueue(IBook book);
 }

@@ -143,22 +143,11 @@ public class Library implements ILibrary {
         return results;
     }
 
-
     @Override
     public void addBook(IBook book) {
         if (book instanceof Book) {
             this.catalogue.add(book);
         }
-    }
-
-    @Override
-    public void getBooking(IBook book, ISubscriber subscriber) {
-
-    }
-
-    @Override
-    public void getBookingByBook(IBook book) {
-
     }
 
     @Override
@@ -187,7 +176,6 @@ public class Library implements ILibrary {
         return true;
     }
 
-    // Java
     @Override
     public List<Book> loadCatalogueFromCSV(String path) {
         List<Book> catalogue = new ArrayList<>();
@@ -200,14 +188,17 @@ public class Library implements ILibrary {
             String line;
             boolean first = true;
             while ((line = br.readLine()) != null) {
-                if (first) { // skip header
+                if (first) {
                     first = false;
                     if (line.toLowerCase().contains("nom du livre") || line.toLowerCase().contains("num isbn")) {
                         continue;
                     }
                 }
+
                 String[] values = line.split(COMMA_DELIMITER);
+                
                 if (values.length < 4) continue;
+                
                 String title = values[0].replaceAll("^\"|\"$", "").trim();
                 String isbn = values[1].replaceAll("^\"|\"$", "").trim();
                 String stockStr = values[2].replaceAll("^\"|\"$", "").trim();
@@ -217,7 +208,7 @@ public class Library implements ILibrary {
                 try {
                     stock = Integer.parseInt(stockStr);
                 } catch (NumberFormatException e) {
-                    continue; // skip malformed line
+                    continue;
                 }
                 catalogue.add(new Book(isbn, title, stock, category));
             }
