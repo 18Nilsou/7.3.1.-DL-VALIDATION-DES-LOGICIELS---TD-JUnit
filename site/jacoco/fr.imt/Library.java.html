@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Library.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bibliotheque</a> &gt; <a href="index.source.html" class="el_package">fr.imt</a> &gt; <span class="el_source">Library.java</span></div><h1>Library.java</h1><pre class="source lang-java linenums">package fr.imt;
+
+import java.io.*;
+import java.util.*;
+
+public class Library implements ILibrary {
+
+    private List&lt;ISubscriber&gt; subscribers;
+    private List&lt;IBooking&gt; bookings;
+    private List&lt;IBook&gt; catalogue;
+
+    public static final String COMMA_DELIMITER = &quot;,&quot;;
+
+<span class="fc" id="L14">    public Library() {</span>
+<span class="fc" id="L15">        this.catalogue = new ArrayList&lt;&gt;(loadCatalogueFromCSV(&quot;./src/data/catalogue.csv&quot;));</span>
+<span class="fc" id="L16">        this.subscribers = new java.util.ArrayList&lt;&gt;();</span>
+<span class="fc" id="L17">        this.bookings = new java.util.ArrayList&lt;&gt;();</span>
+<span class="fc" id="L18">    }</span>
+
+<span class="nc" id="L20">    public Library(String cataloguePath) {</span>
+<span class="nc" id="L21">        this.catalogue = new ArrayList&lt;&gt;(loadCatalogueFromCSV(cataloguePath));</span>
+<span class="nc" id="L22">        this.subscribers = new java.util.ArrayList&lt;&gt;();</span>
+<span class="nc" id="L23">        this.bookings = new java.util.ArrayList&lt;&gt;();</span>
+<span class="nc" id="L24">    }</span>
+
+    @Override
+    public List&lt;IBook&gt; getCatalogue() {
+<span class="fc" id="L28">        return this.catalogue;</span>
+    }
+
+    @Override
+    public boolean logIn(String username, String password) {
+<span class="fc" id="L33">        ISubscriber subscriber = subscribers.stream()</span>
+<span class="fc" id="L34">                .filter(sub -&gt; sub.getUsername().equals(username))</span>
+<span class="fc" id="L35">                .findFirst()</span>
+<span class="fc" id="L36">                .orElse(null);</span>
+<span class="pc bpc" id="L37" title="1 of 4 branches missed.">        if (subscriber != null &amp;&amp; subscriber.getPassword().equals(password)) {</span>
+<span class="fc" id="L38">            return true;</span>
+        }
+<span class="fc" id="L40">        throw new IllegalArgumentException(&quot;Invalid login&quot;);</span>
+    }
+
+    @Override
+    public boolean addSubscriber(ISubscriber subscriber) {
+<span class="fc" id="L45">        this.subscribers.add(subscriber);</span>
+<span class="fc" id="L46">        return this.subscribers.contains(subscriber);</span>
+    }
+
+    public List&lt;IBook&gt; getLateBookings(ISubscriber subscriber) {
+<span class="fc" id="L50">        List&lt;IBook&gt; lateBooks = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L51">        Date currentDate = new Date();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (IBooking booking : bookings) {</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">            if (!booking.getSubscriber().equals(subscriber)) {</span>
+<span class="nc" id="L54">                continue;</span>
+            }
+<span class="fc" id="L56">            Calendar cal = Calendar.getInstance();</span>
+<span class="fc" id="L57">            cal.setTime(booking.getBeginDate());</span>
+<span class="fc" id="L58">            cal.add(Calendar.DAY_OF_MONTH, 30);</span>
+<span class="fc" id="L59">            Date dueDate = cal.getTime();</span>
+
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            if (currentDate.after(dueDate)) {</span>
+<span class="fc" id="L62">                booking.setStatus(BookingState.LATE);</span>
+<span class="fc" id="L63">                lateBooks.add(booking.getBook());</span>
+            }
+<span class="fc" id="L65">        }</span>
+<span class="fc" id="L66">        return lateBooks;</span>
+    }
+
+    @Override
+    public BookingState returnBook(IBook book, ISubscriber subscriber) {
+<span class="fc" id="L71">        IBooking booking = findBooking(book, subscriber);</span>
+
+<span class="pc bpc" id="L73" title="3 of 4 branches missed.">        if (booking.getStatus() != BookingState.BORROW &amp;&amp; booking.getStatus() != BookingState.LATE) {</span>
+<span class="nc" id="L74">            throw new IllegalArgumentException(&quot;Book is not in BORROW or LATE state&quot;);</span>
+        }
+
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (getLateBookings(subscriber).contains(book)) {</span>
+<span class="fc" id="L78">            booking.setStatus(BookingState.RETURN_LATE);</span>
+        } else {
+<span class="fc" id="L80">            booking.setStatus(BookingState.RETURN);</span>
+        }
+
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        for (IBook b : catalogue) {</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">            if (b.equals(book)) {</span>
+<span class="fc" id="L85">                b.incrementStock();</span>
+<span class="fc" id="L86">                break;</span>
+            }
+<span class="fc" id="L88">        }</span>
+
+<span class="fc" id="L90">        return booking.getStatus();</span>
+    }
+
+    @Override
+    public void borrowBook(IBook book, ISubscriber subscriber) {
+<span class="fc" id="L95">        IBooking booking = findBooking(book, subscriber);</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        if (booking.getStatus() != BookingState.BOOKED) {</span>
+<span class="nc" id="L97">            throw new IllegalArgumentException(&quot;Book is not in BOOKED state&quot;);</span>
+        }
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (booking.getBeginDate().after(new Date())) {</span>
+<span class="nc" id="L100">            throw new IllegalArgumentException(&quot;Booking start date is in the future&quot;);</span>
+        }
+
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        for (IBook b : catalogue) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            if (b.equals(book)) {</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">                if (b.getStock() &lt;= 0) {</span>
+<span class="nc" id="L106">                    throw new IllegalArgumentException(&quot;No stock available for this book&quot;);</span>
+                }
+<span class="fc" id="L108">                b.decrementStock();</span>
+<span class="fc" id="L109">                break;</span>
+            }
+<span class="fc" id="L111">        }</span>
+
+<span class="fc" id="L113">        booking.setStatus(BookingState.BORROW);</span>
+<span class="fc" id="L114">    }</span>
+
+    @Override
+    public IBooking findBooking(IBook book, ISubscriber subscriber) {
+<span class="fc" id="L118">        return bookings.stream()</span>
+<span class="pc bpc" id="L119" title="2 of 4 branches missed.">            .filter(b -&gt; b.getBook().equals(book) &amp;&amp; b.getSubscriber().equals(subscriber))</span>
+<span class="fc" id="L120">            .findFirst()</span>
+<span class="pc" id="L121">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Booking not found&quot;));</span>
+    }
+
+    @Override
+    public List&lt;IBooking&gt; findBookingByBook(IBook book) {
+<span class="fc" id="L126">        return this.bookings.stream()</span>
+<span class="fc" id="L127">                .filter(b -&gt; b.getBook().equals(book))</span>
+<span class="fc" id="L128">                .collect(java.util.stream.Collectors.toList());</span>
+    }
+
+    @Override
+    public List&lt;IBook&gt; searchBooks(HashMap&lt;String,String&gt; mapSearch) {
+<span class="fc" id="L133">        List&lt;IBook&gt; results = new ArrayList&lt;&gt;(catalogue);</span>
+
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">        if (mapSearch.containsKey(&quot;title&quot;)) {</span>
+<span class="nc" id="L136">            String title = mapSearch.get(&quot;title&quot;).toLowerCase();</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">            results.removeIf(book -&gt; !book.getTitle().toLowerCase().contains(title));</span>
+        }
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">        if (mapSearch.containsKey(&quot;category&quot;)) {</span>
+<span class="fc" id="L140">            String category = mapSearch.get(&quot;category&quot;).toLowerCase();</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">            results.removeIf(book -&gt; !book.getCategory().toLowerCase().equals(category));</span>
+        }
+
+<span class="fc" id="L144">        return results;</span>
+    }
+
+    @Override
+    public void addBook(IBook book) {
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">        if (book instanceof Book) {</span>
+<span class="fc" id="L150">            this.catalogue.add(book);</span>
+        }
+<span class="fc" id="L152">    }</span>
+
+    @Override
+    public boolean addBooking(IBook book, ISubscriber subscriber, Date beginDate) {
+<span class="pc bpc" id="L156" title="1 of 4 branches missed.">        if (book == null || !catalogue.contains(book)) {</span>
+<span class="fc" id="L157">            throw new IllegalArgumentException(&quot;Book does not exist in catalog&quot;);</span>
+        }
+
+<span class="fc" id="L160">        boolean alreadyBooked = bookings.stream()</span>
+<span class="fc" id="L161">            .anyMatch(booking -&gt; {</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">                if (!booking.getBook().equals(book)) {</span>
+<span class="fc" id="L163">                    return false;</span>
+                }
+<span class="fc" id="L165">                Calendar cal = Calendar.getInstance();</span>
+<span class="fc" id="L166">                cal.setTime(booking.getBeginDate());</span>
+<span class="fc" id="L167">                cal.add(Calendar.DAY_OF_MONTH, 30);</span>
+<span class="fc" id="L168">                Date endDate = cal.getTime();</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">                return endDate.compareTo(beginDate) &gt;= 0;</span>
+            });
+
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        if (alreadyBooked) {</span>
+<span class="fc" id="L173">            throw new IllegalArgumentException(&quot;Book is already booked for the given period&quot;);</span>
+        }
+
+<span class="fc" id="L176">        bookings.add(new Booking(book, subscriber, beginDate));</span>
+<span class="fc" id="L177">        return true;</span>
+    }
+
+    @Override
+    public List&lt;Book&gt; loadCatalogueFromCSV(String path) {
+<span class="fc" id="L182">        List&lt;Book&gt; catalogue = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L184">        InputStream is = getClass().getResourceAsStream(path);</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">        try (BufferedReader br = is != null</span>
+<span class="nc" id="L186">                ? new BufferedReader(new InputStreamReader(is, java.nio.charset.StandardCharsets.UTF_8))</span>
+<span class="fc" id="L187">                : java.nio.file.Files.newBufferedReader(java.nio.file.Paths.get(path), java.nio.charset.StandardCharsets.UTF_8)) {</span>
+
+            String line;
+<span class="fc" id="L190">            boolean first = true;</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">            while ((line = br.readLine()) != null) {</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">                if (first) {</span>
+<span class="fc" id="L193">                    first = false;</span>
+<span class="pc bpc" id="L194" title="3 of 4 branches missed.">                    if (line.toLowerCase().contains(&quot;nom du livre&quot;) || line.toLowerCase().contains(&quot;num isbn&quot;)) {</span>
+<span class="nc" id="L195">                        continue;</span>
+                    }
+                }
+
+<span class="fc" id="L199">                String[] values = line.split(COMMA_DELIMITER);</span>
+
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">                if (values.length &lt; 4) continue;</span>
+<span class="fc" id="L202">                String title = values[0].replaceAll(&quot;^\&quot;|\&quot;$&quot;, &quot;&quot;).trim();</span>
+<span class="fc" id="L203">                String isbn = values[1].replaceAll(&quot;^\&quot;|\&quot;$&quot;, &quot;&quot;).trim();</span>
+<span class="fc" id="L204">                String stockStr = values[2].replaceAll(&quot;^\&quot;|\&quot;$&quot;, &quot;&quot;).trim();</span>
+<span class="fc" id="L205">                String category = values[3].replaceAll(&quot;^\&quot;|\&quot;$&quot;, &quot;&quot;).trim();</span>
+
+                int stock;
+                try {
+<span class="fc" id="L209">                    stock = Integer.parseInt(stockStr);</span>
+<span class="nc" id="L210">                } catch (NumberFormatException e) {</span>
+<span class="nc" id="L211">                    continue;</span>
+<span class="fc" id="L212">                }</span>
+<span class="fc" id="L213">                catalogue.add(new Book(isbn, title, stock, category));</span>
+<span class="fc" id="L214">            }</span>
+<span class="nc" id="L215">        } catch (IOException e) {</span>
+<span class="nc" id="L216">            System.out.println(&quot;Error loading CSV: &quot; + e);</span>
+<span class="nc" id="L217">            return List.of();</span>
+<span class="fc" id="L218">        }</span>
+<span class="fc" id="L219">        return catalogue;</span>
+    }
+
+    @Override
+    public void addInQueue(IBook book, ISubscriber subscriber) {
+<span class="nc" id="L224">        book.addInLine(subscriber);</span>
+<span class="nc" id="L225">    }</span>
+
+    @Override
+    public boolean borrowBookForTheQueue(IBook book) {
+
+<span class="fc" id="L230">        ISubscriber nextSubscriber = book.getFirstInLine();</span>
+<span class="fc" id="L231">        List&lt;IBooking&gt; listOfBookings = findBookingByBook(book);</span>
+<span class="pc bpc" id="L232" title="1 of 4 branches missed.">        if(book.getStock() &gt; 0 &amp;&amp; listOfBookings.isEmpty()) {</span>
+<span class="fc" id="L233">            return true;</span>
+        }
+        
+<span class="fc" id="L236">        Calendar cal = Calendar.getInstance();</span>
+<span class="fc" id="L237">        cal.add(Calendar.DAY_OF_MONTH, 30);</span>
+<span class="fc" id="L238">        Date futureDate = cal.getTime();</span>
+        
+<span class="fc" id="L240">        boolean flag = true;</span>
+
+<span class="pc bpc" id="L242" title="2 of 4 branches missed.">        if(book.getStock() &gt; 0 &amp;&amp; nextSubscriber != null) {</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">            for (IBooking booking : listOfBookings) {</span>
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">                if (booking.getBeginDate().before(futureDate)) {</span>
+<span class="fc" id="L245">                    flag = false;</span>
+                }
+<span class="fc" id="L247">            }</span>
+        }
+
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">        if(flag){</span>
+<span class="nc" id="L251">            borrowBook(book, nextSubscriber);</span>
+<span class="nc" id="L252">            return true;</span>
+        }
+
+<span class="fc" id="L255">        return false;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

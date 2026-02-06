@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Book.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bibliotheque</a> &gt; <a href="index.source.html" class="el_package">fr.imt</a> &gt; <span class="el_source">Book.java</span></div><h1>Book.java</h1><pre class="source lang-java linenums">package fr.imt;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class Book implements IBook {
+
+    private String title;
+    private String isbn;
+    private int stock;
+    private String category;
+    private List&lt;ISubscriber&gt; waitlist;
+
+<span class="fc" id="L15">    public Book(String isbn, String title, int stock, String category) {</span>
+<span class="fc" id="L16">        this.category = category;</span>
+<span class="fc" id="L17">        this.isbn = isbn;</span>
+<span class="fc" id="L18">        this.title = title;</span>
+<span class="fc" id="L19">        this.stock = stock;</span>
+<span class="fc" id="L20">        this.waitlist = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L21">    }</span>
+
+    @Override
+    public String getCategory() {
+<span class="fc" id="L25">        return this.category;</span>
+    }
+    @Override
+    public String getTitle() {
+<span class="nc" id="L29">        return this.title;</span>
+    }
+
+    @Override
+    public String getIsbn() {
+<span class="nc" id="L34">        return this.isbn;</span>
+    }
+
+    @Override
+    public HashMap&lt;String, String&gt; toHashMap() {
+<span class="nc" id="L39">        HashMap&lt;String, String&gt; details = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L40">        details.put(&quot;title&quot;, this.title);</span>
+<span class="nc" id="L41">        details.put(&quot;isbn&quot;, this.isbn);</span>
+<span class="nc" id="L42">        details.put(&quot;stock&quot;, Integer.toString(this.stock));</span>
+<span class="nc" id="L43">        details.put(&quot;category&quot;, this.category);</span>
+<span class="nc" id="L44">        return details;</span>
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (this == obj) return true;</span>
+<span class="pc bpc" id="L50" title="2 of 4 branches missed.">        if (obj == null || getClass() != obj.getClass()) return false;</span>
+<span class="fc" id="L51">        Book book = (Book) obj;</span>
+<span class="fc" id="L52">        return isbn.equals(book.isbn);</span>
+    }
+    @Override
+    public int getStock() {
+<span class="fc" id="L56">        return stock;</span>
+    }
+    @Override
+    public void decrementStock() {
+<span class="fc" id="L60">        this.stock--;</span>
+<span class="fc" id="L61">    }</span>
+    @Override
+    public void incrementStock() {
+<span class="fc" id="L64">        this.stock++;</span>
+<span class="fc" id="L65">    }</span>
+
+    @Override
+    public ISubscriber getFirstInLine() {
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if (this.waitlist.isEmpty()) {</span>
+<span class="nc" id="L70">            return null;</span>
+        }
+<span class="fc" id="L72">        ISubscriber firstInLine = this.waitlist.get(0);</span>
+<span class="fc" id="L73">        this.waitlist.remove(0);</span>
+
+<span class="fc" id="L75">        return firstInLine;</span>
+    }
+
+    @Override
+    public boolean addInLine(ISubscriber subscriber) {
+<span class="fc" id="L80">        return this.waitlist.add(subscriber);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

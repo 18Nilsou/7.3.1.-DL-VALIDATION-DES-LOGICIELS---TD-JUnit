@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Booking.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bibliotheque</a> &gt; <a href="index.source.html" class="el_package">fr.imt</a> &gt; <span class="el_source">Booking.java</span></div><h1>Booking.java</h1><pre class="source lang-java linenums">package fr.imt;
+
+public class Booking implements IBooking {
+    private IBook book;
+    private ISubscriber subscriber;
+    private java.util.Date beginDate;
+    private BookingState status;
+
+<span class="fc" id="L9">    public Booking(IBook book, ISubscriber subscriber, java.util.Date beginDate) {</span>
+<span class="fc" id="L10">        this.book = book;</span>
+<span class="fc" id="L11">        this.subscriber = subscriber;</span>
+<span class="fc" id="L12">        this.beginDate = beginDate;</span>
+<span class="fc" id="L13">        this.status = BookingState.BOOKED;</span>
+<span class="fc" id="L14">    }</span>
+
+    @Override
+    public IBook getBook() {
+<span class="fc" id="L18">        return this.book;</span>
+    }
+
+    @Override
+    public ISubscriber getSubscriber() {
+<span class="fc" id="L23">        return this.subscriber;</span>
+    }
+
+    @Override
+    public java.util.Date getBeginDate() {
+<span class="fc" id="L28">        return this.beginDate;</span>
+    }
+
+    @Override
+    public BookingState getStatus() {
+<span class="fc" id="L33">        return this.status;</span>
+    }
+
+    @Override
+    public void setStatus(BookingState status) {
+<span class="fc" id="L38">        this.status = status;</span>
+<span class="fc" id="L39">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
