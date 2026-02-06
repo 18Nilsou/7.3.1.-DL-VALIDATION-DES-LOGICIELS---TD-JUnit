@@ -34,7 +34,7 @@ public class Library implements ILibrary {
                 .filter(sub -> sub.getUsername().equals(username))
                 .findFirst()
                 .orElse(null);
-        if (subscriber != null && subscriber.getUsername().equals(username) && subscriber.getPassword().equals(password)) {
+        if (subscriber != null && subscriber.getPassword().equals(password)) {
             return true;
         }
         throw new IllegalArgumentException("Invalid login");
@@ -57,6 +57,7 @@ public class Library implements ILibrary {
             cal.setTime(booking.getBeginDate());
             cal.add(Calendar.DAY_OF_MONTH, 30);
             Date dueDate = cal.getTime();
+
             if (currentDate.after(dueDate)) {
                 booking.setStatus(BookingState.LATE);
                 lateBooks.add(booking.getBook());
@@ -81,7 +82,7 @@ public class Library implements ILibrary {
 
         for (IBook b : catalogue) {
             if (b.equals(book)) {
-                ((Book) b).incrementStock();
+                b.incrementStock();
                 break;
             }
         }
@@ -101,10 +102,10 @@ public class Library implements ILibrary {
 
         for (IBook b : catalogue) {
             if (b.equals(book)) {
-                if (((Book) b).getStock() <= 0) {
+                if (b.getStock() <= 0) {
                     throw new IllegalArgumentException("No stock available for this book");
                 }
-                ((Book) b).decrementStock();
+                b.decrementStock();
                 break;
             }
         }
@@ -133,7 +134,7 @@ public class Library implements ILibrary {
 
         if (mapSearch.containsKey("title")) {
             String title = mapSearch.get("title").toLowerCase();
-            results.removeIf(book -> !((Book) book).getTitle().toLowerCase().contains(title));
+            results.removeIf(book -> !book.getTitle().toLowerCase().contains(title));
         }
         if (mapSearch.containsKey("category")) {
             String category = mapSearch.get("category").toLowerCase();
@@ -196,9 +197,8 @@ public class Library implements ILibrary {
                 }
 
                 String[] values = line.split(COMMA_DELIMITER);
-                
+
                 if (values.length < 4) continue;
-                
                 String title = values[0].replaceAll("^\"|\"$", "").trim();
                 String isbn = values[1].replaceAll("^\"|\"$", "").trim();
                 String stockStr = values[2].replaceAll("^\"|\"$", "").trim();
