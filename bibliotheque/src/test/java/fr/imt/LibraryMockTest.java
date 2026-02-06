@@ -1,0 +1,209 @@
+package fr.imt;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+
+public class LibraryMockTest {
+
+    private ILibrary library;
+    private ISubscriber john;
+    private ISubscriber johnny;
+    private IBook book1;
+    private IBook book2;
+    private IBook book3;
+
+    @BeforeEach
+    public void init() {
+        library = new Library();
+        
+        john = new Subscriber(1, "John", "password1");
+        johnny = new Subscriber(2, "Johnny", "password2");
+        
+        library.addSubscriber(john);
+        library.addSubscriber(johnny);
+        
+        book1 = new Book("Livre1","0000000000001",12,"Classique");
+        book2 = new Book("Livre2","0000000000002",8,"Dystopie");
+        book3 = new Book("Livre3","0000000000003",1,"Classique");
+        
+        library.addBook(book1);
+        library.addBook(book2);
+        library.addBook(book3);
+    }
+
+    @Test
+    @DisplayName("S1: john cherche à se connecter avec des identifiants invalides")
+    public void testS1_LoginFailWithException() {
+        
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> library.logIn("John", "wrongpassword"));
+        
+        String expectedMessage = "Invalid login";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+ 
+    @Test
+    @DisplayName("S2: johnny se connecte et recherche des livres Polar")
+    public void testS2_LoginSuccessAndSearchPolars() {
+
+        assertTrue(library.logIn("Johnny", "password2"));
+        
+        HashMap<String, String> searchParams = new HashMap<>();
+        searchParams.put("category", "Fantasy");
+
+        IBook b1 = new Book("9782070541270","Harry Potter à l'école des sorciers",25,"Fantasy");
+        IBook b2 = new Book("9782267013160", "Le Seigneur des Anneaux",10,"Fantasy");
+
+        List<IBook> result = library.searchBooks(searchParams);
+
+        assertTrue(result.contains(b1));
+        assertTrue(result.contains(b2));
+    }
+
+    @Test
+    @DisplayName("S3: Recherche d'une catégorie inexistante (Voyage)")
+    public void testS3_SearchForMissingCategory() {
+        HashMap<String, String> searchParams = new HashMap<>();
+        searchParams.put("category", "Voyage");
+        
+
+        List<IBook> result = library.searchBooks(searchParams);
+        assertEquals(0, result.size(), 
+            "Searching for a missing category should return an empty list");
+    }
+
+    @Test
+    @DisplayName("S4: Réservation d'un ouvrage existant mais indisponible")
+    public void testS4_BookUnavailableBook() {
+        
+        Date reservationDate = new Date();
+        library.addBooking(book1, johnny, reservationDate);
+                
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> library.addBooking(book1, john, reservationDate));
+        
+        String expectedMessage = "Book is already booked for the given period";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    @DisplayName("S5: Réservation d'un ouvrage existant et disponible")
+    public void testS5_BookAvailableBook() {
+        Date reservationDate = new Date();
+
+        boolean result = library.addBooking(book1, johnny, reservationDate);
+
+        assertTrue(result);
+    }
+
+    @Test
+    @DisplayName("S6: Réservation d'un ouvrage n'existant pas dans le fonds")
+    public void testS6_BookNonExistentBook() {
+        IBook nonExistentBook = mock(IBook.class);
+        Date reservationDate = new Date();
+
+        assertThrows(IllegalArgumentException.class,
+            () -> library.addBooking(nonExistentBook, johnny, reservationDate),
+            "Booking a non-existent book should throw IllegalArgumentException");
+    }
+ 
+    @Test
+    @DisplayName("S7: Un abonné s'identifie et obtient la liste de ses emprunts en retard")
+    public void testS7_GetOverdueBorrowings() {
+       
+        library.logIn("Johnny", "password2");
+        library.addBooking(book1, johnny, new Date(System.currentTimeMillis() - 40L * 24 * 60 * 60 * 1000)); 
+        library.addBooking(book2, johnny, new Date(System.currentTimeMillis() - 35L * 24 * 60 * 60 * 1000));
+
+        List<IBook> overdueBooks = Arrays.asList(book1, book2);
+        
+        List<IBook> result = library.getLateBookings(johnny);
+        
+        assertEquals(overdueBooks, result);
+    }
+
+    @Test
+    @DisplayName("S8: Livre emprunté le 30 janvier, consultation le 1er mars - livre en retard")
+    public void testS8_BookOverdueAfterOneMonth() {
+
+        Date borrowDateObj = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.set(2024, Calendar.JANUARY, 30);
+        borrowDateObj = cal.getTime();
+        library.addBooking(book1, johnny, borrowDateObj);
+
+        List<IBook> result = library.getLateBookings(johnny);
+        assertTrue(result.contains(book1));
+    }
+ 
+    @Test
+    @DisplayName("S9: Un abonné emprunte un livre - le stock est mis à jour")
+    public void testS9_BorrowBookUpdatesStock() {
+
+        library.addBooking(book1, johnny, new Date());
+        library.borrowBook(book1, johnny);
+        library.getCatalogue().stream()
+            .filter(b -> b.equals(book1))
+            .findFirst()
+            .ifPresent(b -> {
+                assertEquals(11, ((Book) b).getStock());
+            });
+    }
+
+
+    @Test
+    @DisplayName("S10: Un abonné retourne un livre dans les temps")
+    public void testS10_ReturnBookOnTime() {
+        boolean result = library.addBooking(book1, johnny, new Date(System.currentTimeMillis() - 15L * 24 * 60 * 60 * 1000));
+        assertTrue(result);
+
+        library.borrowBook(book1, johnny);
+
+
+        BookingState state = library.returnBook(book1, johnny);
+        assertEquals(BookingState.RETURN, state);
+    }
+
+
+    @Test
+    @DisplayName("S11: Un abonné retourne un livre en retard - notification de retard")
+    public void testS11_ReturnBookLate() {
+        boolean result = library.addBooking(book1, johnny, new Date(System.currentTimeMillis() - 40L * 24 * 60 * 60 * 1000));
+        assertTrue(result);
+
+        library.borrowBook(book1, johnny);
+
+        BookingState state = library.returnBook(book1, johnny);
+        assertEquals(BookingState.RETURN_LATE, state);
+    }
+
+
+    @Test
+    @DisplayName("S12a: Abonné premier sur la liste de réservation - emprunt réussi")
+    public void testS12a_BorrowBookFirstInLine() {
+        
+        book1.addInLine(john);
+        assertEquals(book1.getFirstInLine(), john);
+
+        book1.addInLine(john);
+        assertTrue(library.borrowBookForTheQueue(book1));
+        
+    }
+
+    @Test
+    @DisplayName("S12b: Abonné pas premier sur la liste - emprunt refusé")
+    public void testS12b_BorrowBookNotFirstInLine() {
+        book3.addInLine(john);
+        library.addBooking(book3, johnny, new Date());
+
+        assertFalse(library.borrowBookForTheQueue(book3));
+    }
+}
