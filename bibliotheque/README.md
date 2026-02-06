@@ -21,7 +21,7 @@ mvn test
 ## Rapport de couverture JaCoCo
 
 Après avoir lancé les tests, un rapport de couverture de code est généré par JaCoCo.
-Vous pouvez le consulter dans le fichier `target/site/jacoco/index.html`.
+Vous pouvez le consulter dans le fichier `/site/jacoco/index.html`.
 Ouvrez ce fichier dans votre navigateur pour voir le détail de la couverture.
 
 ## Choix techniques
